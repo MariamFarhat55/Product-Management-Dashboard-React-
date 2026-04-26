@@ -1,11 +1,14 @@
-// ProductList.jsx
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { deleteProduct } from "../redux/productSlice";
 
 function ProductList() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getProducts();
@@ -17,10 +20,9 @@ function ProductList() {
       .then((res) => setProducts(res.data));
   };
 
-  const deleteProduct = (id) => {
-    axios
-      .delete(`http://localhost:3001/products/${id}`)
-      .then(() => getProducts());
+  const handleDelete = async (id) => {
+    await dispatch(deleteProduct(id));
+    getProducts();
   };
 
   const filteredProducts = products.filter((item) =>
@@ -47,7 +49,9 @@ function ProductList() {
           <p>ID: {item.id}</p>
 
           <div className="actions">
-            <button onClick={() => deleteProduct(item.id)}>Delete</button>
+            <button onClick={() => handleDelete(item.id)}>
+              Delete
+            </button>
 
             <Link to={`/edit/${item.id}`}>
               <button>Edit</button>
